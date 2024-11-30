@@ -3,17 +3,20 @@ import express from 'express';
 import mysql from 'mysql2';
 import path from 'path';
 import dotenv from 'dotenv';
+import db from './models';
 
 // Criando uma instância do app Express
 const app = express();
 
-// Configuração do banco de dados MySQL
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
+// Sincronizar os modelos com o banco de dados
+(async () => {
+  try {
+    await db.sequelize.sync({ force: false }); // Altere para true para recriar tabelas (apenas em dev)
+    console.log('Banco de dados sincronizado.');
+  } catch (error) {
+    console.error('Erro ao sincronizar o banco de dados:', error);
+  }
+})();
 
 // Conectando ao banco de dados MySQL
 db.connect((err) => {
@@ -46,7 +49,7 @@ app.get('*', (req, res) => {
 });
 
 // Definindo a porta para o servidor rodar
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
