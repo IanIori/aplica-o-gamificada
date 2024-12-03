@@ -1,5 +1,6 @@
 // Importando as bibliotecas necessárias
 import express from 'express';
+import routes from './backend/routes/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from './backend/models/index.js';
@@ -44,6 +45,9 @@ app.use(express.static(path.join(__dirname, 'frontend/build')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
 });
+
+// Usa as rotas centralizadas
+app.use('/api', routes);
 
 // Definindo a porta para o servidor rodar
 const PORT = process.env.PORT || 3000;
