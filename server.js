@@ -4,6 +4,8 @@ import routes from './backend/routes/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from './backend/models/index.js';
+import authRoutes from './backend/routes/AuthRoutes.js'
+
 
 // Criando uma instância do app Express
 const app = express();
@@ -48,6 +50,8 @@ app.get('*', (req, res) => {
 
 // Usa as rotas centralizadas
 app.use('/api', routes);
+app.use('/api/auth', authRoutes);
+
 
 // Definindo a porta para o servidor rodar
 const PORT = process.env.PORT || 3000;
