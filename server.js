@@ -1,60 +1,65 @@
-// Importando as bibliotecas necessárias
 import express from 'express';
 import routes from './backend/routes/index.js';
+import authRoutes from './backend/routes/AuthRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from './backend/models/index.js';
-import authRoutes from './backend/routes/AuthRoutes.js'
 
-
-// Criando uma instância do app Express
 const app = express();
 
-// Sincronizar os modelos com o banco de dados
-(async () => {
+/*(async () => {
   try {
-    await db.sequelize.authenticate(); // Verifica a conexão
-    console.log('Conexão com o banco de dados estabelecida.');
-
-    await db.sequelize.sync({ force: false }); // Sincroniza os modelos
-    console.log('Modelos sincronizados com o banco de dados.');
+    console.log('Iniciando conexão com o banco de dados...');
+    await db.sequelize.sync({ force: false });
+    console.log('Banco de dados sincronizado e conexão estabelecida.');
   } catch (error) {
     console.error('Erro ao conectar ou sincronizar o banco de dados:', error);
-    process.exit(1); // Encerra a aplicação caso o banco de dados falhe
+    process.exit(1);
+  }
+})();*/
+
+(async () => {
+  try {
+    console.log('Tentando autenticar com o banco de dados...');
+    await db.sequelize.authenticate();
+    console.log('Conexão autenticada com sucesso!');
+
+    console.log('Sincronizando os modelos...');
+    await db.sequelize.sync({ force: false });
+    console.log('Modelos sincronizados com sucesso!');
+  } catch (error) {
+    console.error('Erro durante a sincronização:', error.message);
+    process.exit(1);
   }
 })();
 
-// Middleware para lidar com requisições JSON
+console.log('Ativando middleware para JSON...');
 app.use(express.json());
 
-// Exemplo de rota usando Sequelize
-app.get('/api/progress', async (req, res) => {
-  try {
-    const progress = await db.Progress.findAll(); // Ajuste ao modelo
-    res.json(progress);
-  } catch (error) {
-    console.error('Erro ao buscar dados:', error);
-    res.status(500).json({ error: 'Erro ao buscar dados' });
-  }
-});
+console.log('Registrando rotas...');
+app.use('/api', (req, res, next) => {
+  console.log('Rota /api acessada');
+  next();
+}, routes);
+app.use('/api/auth', authRoutes);
 
-// Servindo o frontend React (após build)
+console.log('Servindo frontend React...');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-// Rota para quando a aplicação for acessada diretamente
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 app.get('*', (req, res) => {
+  console.log('Servindo React para rota não capturada');
   res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
 });
 
-// Usa as rotas centralizadas
-app.use('/api', routes);
-app.use('/api/auth', authRoutes);
-
-
-// Definindo a porta para o servidor rodar
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+// Middleware para capturar erros globais
+app.use((err, req, res, next) => {
+  console.error('Erro capturado no middleware:', err);
+  res.status(500).json({ error: 'Erro interno do servidor' });
 });

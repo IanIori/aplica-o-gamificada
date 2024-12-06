@@ -1,8 +1,9 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('database_name', 'username', 'password', {
+const sequelize = new Sequelize('school_app', 'root', 'root', {
   host: 'localhost',
   dialect: 'mysql',
+  logging: console.log, // Exibe queries no console
 });
 
 export default sequelize;
