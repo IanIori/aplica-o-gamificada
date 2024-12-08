@@ -7,17 +7,6 @@ import db from './backend/models/index.js';
 
 const app = express();
 
-/*(async () => {
-  try {
-    console.log('Iniciando conexão com o banco de dados...');
-    await db.sequelize.sync({ force: false });
-    console.log('Banco de dados sincronizado e conexão estabelecida.');
-  } catch (error) {
-    console.error('Erro ao conectar ou sincronizar o banco de dados:', error);
-    process.exit(1);
-  }
-})();*/
-
 (async () => {
   try {
     console.log('Tentando autenticar com o banco de dados...');
@@ -47,10 +36,10 @@ console.log('Servindo frontend React...');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, 'frontend/build')));
+app.use(express.static(path.join(__dirname, 'frontend/public')));
 app.get('*', (req, res) => {
   console.log('Servindo React para rota não capturada');
-  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend/public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
@@ -58,7 +47,6 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-// Middleware para capturar erros globais
 app.use((err, req, res, next) => {
   console.error('Erro capturado no middleware:', err);
   res.status(500).json({ error: 'Erro interno do servidor' });

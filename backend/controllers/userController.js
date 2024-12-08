@@ -1,6 +1,5 @@
 import db from '../models/index.js';
 
-// Controlador para listar todos os usuários
 export const getAllUsers = async (req, res) => {
   try {
     const users = await db.User.findAll(); // Recupera todos os usuários
@@ -11,7 +10,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Controlador para buscar um usuário por ID
 export const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -26,11 +24,16 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Controlador para criar um novo usuário
 export const createUser = async (req, res) => {
-  const { name, email } = req.body;
+  const { username, email, password, role } = req.body;
+
+  // Verifica se todos os campos obrigatórios estão presentes
+  if (!username || !password || !email || !role) {
+    return res.status(400).json({ error: 'Todos os campos obrigatórios devem ser preenchidos.' });
+  }
+
   try {
-    const newUser = await db.User.create({ name, email });
+    const newUser = await db.User.create({ username, email, password, role });
     res.status(201).json(newUser);
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
@@ -38,7 +41,6 @@ export const createUser = async (req, res) => {
   }
 };
 
-// Controlador para atualizar um usuário
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, email } = req.body;
@@ -55,7 +57,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Controlador para excluir um usuário
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {

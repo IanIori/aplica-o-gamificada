@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css'; // Estilos para a página de login
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -24,9 +24,10 @@ const Login = () => {
         <h2>Login</h2>
         {error && <p className="error">{error}</p>}
         <div className="form-group">
-          <label>Email</label>
+          <label>Usuário</label>
           <input
             type="email"
+            placeholder="Digite seu login"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -36,6 +37,7 @@ const Login = () => {
           <label>Senha</label>
           <input
             type="password"
+            placeholder="Digite sua senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
